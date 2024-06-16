@@ -114,7 +114,7 @@ public:
             inputs->itemById(kBodiesInput),
                     inputs->itemById(kOutputFileSuffixInput),
                     inputs->itemById(kOutputFileOverwriteInput),
-                    inputs->itemById(kOutputFolderInput)
+                    inputs->itemById(kOutputFolderTextBoxInput)
         };
         std::vector<aPtr<acore::Attribute>> selectedBodies = design->findAttributes(kAttributeGroup, kAttributeSelectedBodies);
         for (auto&& a : selectedBodies) {
@@ -207,12 +207,12 @@ public:
         bodySelectionInput->tooltip("Select bodies to export to STL");
         bodySelectionInput->tooltipDescription("Selected bodies must be solid.");
 
-        // Output directory
-        aPtr<acore::TextBoxCommandInput> outputFolderInput = inputs->addTextBoxCommandInput(kOutputFolderInput, "Output Folder", getDownloadsFolder().string().c_str(), 1, true);
-        if (!outputFolderInput)
-            return;
-        outputFolderInput->tooltip("Output Folder");
-        outputFolderInput->tooltipDescription("Select the output folder for the STL files");
+//        // Output directory
+//        aPtr<acore::TextBoxCommandInput> outputFolderInput = inputs->addTextBoxCommandInput(kOutputFolderInput, "Output Folder", getDownloadsFolder().string().c_str(), 1, true);
+//        if (!outputFolderInput)
+//            return;
+//        outputFolderInput->tooltip("Output Folder");
+//        outputFolderInput->tooltipDescription("Select the output folder for the STL files");
         aPtr<acore::BoolValueCommandInput> dirbtn = inputs->addBoolValueInput(kOutputFolderInput, "Output Folder", false, "", true);
         inputs->addTextBoxCommandInput(kOutputFolderTextBoxInput, "", "", 1, true);
 
@@ -224,7 +224,7 @@ public:
         outputFileSuffixInput->tooltipDescription("Suffix to append to the output file name. Note that a leading underscore will be added.");
 
         // overwrite
-        aPtr<acore::BoolValueCommandInput> outputOverwriteInput = inputs->addBoolValueInput(kOutputFileOverwriteInput, "Overwrite Existing Files", false, "", true);
+        aPtr<acore::BoolValueCommandInput> outputOverwriteInput = inputs->addBoolValueInput(kOutputFileOverwriteInput, "Overwrite Existing Files", true, "", true);
         if (!outputOverwriteInput)
             return;
         outputOverwriteInput->text("Overwrite Existing Files");

@@ -27,7 +27,7 @@ bool handleInputs(aPtr<acore::CommandInputs>& inputs, STLHelperInputs& hIn, STLH
             inputs->itemById(kBodiesInput),
             inputs->itemById(kOutputFileSuffixInput),
             inputs->itemById(kOutputFileOverwriteInput),
-            inputs->itemById(kOutputFolderInput)
+            inputs->itemById(kOutputFolderTextBoxInput)
     };
 
     // check for selection
@@ -63,15 +63,6 @@ bool handleInputs(aPtr<acore::CommandInputs>& inputs, STLHelperInputs& hIn, STLH
         res.outputFileSuffix = "_";
         res.outputFileSuffix += hIn.outputFileSuffixInput->value();
     }
-
-//    // save body selection
-//    auto design = acore::Application::get()->activeProduct();
-//    res.bodies.clear();
-//    auto selectedBodies = design->findAttributes(kAttributeGroup, kAttributeSelectedBodies);
-//    for (auto&& b : selectedBodies) {
-//        if (b->parent() != nullptr)
-//            b->deleteMe();
-//    }
 
     // Collect Bodies
     res.bodies.clear();
@@ -120,7 +111,8 @@ bool generateFileList(STLHelperConfig const& conf, std::vector<STLHelperFileTask
         myFileName += ".stl";
         std::replace(myFileName.begin(), myFileName.end(), ' ', '_');
         task.filePath /= myFileName;
-        task.overwrite = conf.outputOverwrite;
+        // HACK
+        task.overwrite = true;// conf.outputOverwrite;
         res.emplace_back(std::move(task));
     }
     return true;
@@ -187,6 +179,7 @@ bool exportSTLFiles(std::vector<STLHelperFileTaskInfo> const& tasks, aPtr<aDesig
         }
 
         stlExportOptions->sendToPrintUtility(false);
+        stlExportOptions->meshRefinement(afusion::MeshRefinementHigh);
         exportMgr->execute(stlExportOptions);
     }
     return true;
