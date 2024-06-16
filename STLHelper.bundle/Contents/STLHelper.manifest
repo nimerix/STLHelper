@@ -1,0 +1,15 @@
+{
+    "autodeskProduct":	"Fusion",
+	"type":	"addin",
+	"author":	"Michael Pearce",
+	"description":	{
+		"":	"Export multiple bodies to STL files",
+	},
+	"supportedOS":	"windows|mac",
+	"editEnabled":	true,
+	"id":	"4bc3f3f5-ec8c-4102-bf3f-e94ebcaf13e4",
+	"version":	"0.1.1",
+	"runOnStartup":	true,
+	"sourcewindows":	"STLHelper.vcxproj",
+	"sourcemac":	"STLHelper.xcodeproj"
+}

@@ -1,0 +1,10 @@
+build/
+*.dll
+.idea/
+.vscode/
+*.suo
+*.dylib
+.DS_Store
+*.xcodeproj
+*.vcxproj
+cmake-build-*/
