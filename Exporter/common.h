@@ -18,6 +18,7 @@ using aApp = acore::Application;
 using aUI = acore::UserInterface;
 using aDesign = afusion::Design;
 using aComp = afusion::Component;
+
 const char * const kButtonName = "STLHelperButton";
 const char * const kPanelName = "MakePanel";
 const char * const kCommandId = "STLHelperCommandId";

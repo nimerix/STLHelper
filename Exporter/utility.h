@@ -4,9 +4,9 @@
 
 fs::path getHomeFolder() {
 #ifdef _WIN32
-    return fs::path(std::getenv("USERPROFILE"));
+    return std::getenv("USERPROFILE");
 #else
-    return fs::path(std::getenv("HOME"));
+    return std::getenv("HOME");
 #endif
 }
 
@@ -157,6 +157,7 @@ bool exportSTLFiles(std::vector<STLHelperFileTaskInfo> const& tasks, aPtr<aDesig
             err->isFatal = true;
             return false;
         }
+
         auto exportMgr = design->exportManager();
         if (!exportMgr) {
             if (err) {
@@ -167,7 +168,7 @@ bool exportSTLFiles(std::vector<STLHelperFileTaskInfo> const& tasks, aPtr<aDesig
             return false;
         }
 
-        aPtr<afusion::STLExportOptions> stlExportOptions = exportMgr->createSTLExportOptions(t.body, t.filePath);
+        auto stlExportOptions = exportMgr->createSTLExportOptions(t.body, t.filePath);
         if (!stlExportOptions) {
             if (err) {
                 err->message = "Failed to create STL export options for file ";
