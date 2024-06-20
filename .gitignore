@@ -8,3 +8,4 @@ build/
 *.xcodeproj
 *.vcxproj
 cmake-build-*/
+vscode-build/

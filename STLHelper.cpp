@@ -1,8 +1,10 @@
 
 #include "Exporter/common.h"
 #include "Exporter/types.h"
+#include "platform.h"
 #include "utility.h"
 
+using namespace xpt;
 
 aPtr<aApp> app;
 aPtr<aUI> ui;
@@ -12,8 +14,8 @@ STLHelperError err;
 STLHelperInputs ginputs;
 std::vector<STLHelperFileTaskInfo> tasks;
 
-inline void printError(const STLHelperError & err) {
-    ui->messageBox(err.message.c_str(), err.title, acore::OKButtonType, err.isFatal ? acore::CriticalIconType : acore::WarningIconType);
+inline void printError(const STLHelperError & error) {
+    ui->messageBox(error.message.c_str(), error.title, acore::OKButtonType, error.isFatal ? acore::CriticalIconType : acore::WarningIconType);
 }
 
 class OnExecuteEventHandler : public acore::CommandEventHandler {
@@ -74,9 +76,9 @@ public:
         if (!inputs)
             return;
         auto input = eventArgs->input();
-        if (input->id() == kOutputFolderInput) {
+        if (input->id() == constants::kOutputFolderInput) {
             aPtr<acore::BoolValueCommandInput> button = input;
-            aPtr<acore::TextBoxCommandInput> folder = inputs->itemById(kOutputFolderTextBoxInput);
+            aPtr<acore::TextBoxCommandInput> folder = inputs->itemById(constants::kOutputFolderTextBoxInput);
             aPtr<acore::FolderDialog> folderDialog = ui->createFolderDialog();
             if (!folderDialog)
                 return;
@@ -111,28 +113,28 @@ public:
 
         auto inputs = cmd->commandInputs();
         ginputs = {
-            inputs->itemById(kBodiesInput),
-                    inputs->itemById(kOutputFileSuffixInput),
-                    inputs->itemById(kOutputFileOverwriteInput),
-                    inputs->itemById(kOutputFolderTextBoxInput)
+            inputs->itemById(constants::kBodiesInput),
+                    inputs->itemById(constants::kOutputFileSuffixInput),
+                    inputs->itemById(constants::kOutputFileOverwriteInput),
+                    inputs->itemById(constants::kOutputFolderTextBoxInput)
         };
-        std::vector<aPtr<acore::Attribute>> selectedBodies = design->findAttributes(kAttributeGroup, kAttributeSelectedBodies);
+        std::vector<aPtr<acore::Attribute>> selectedBodies = design->findAttributes(constants::kAttributeGroup, constants::kAttributeSelectedBodies);
         for (auto&& a : selectedBodies) {
             if (a->parent() != nullptr)
                 a->deleteMe();
         }
 
-        aPtr<acore::Attribute> outputFileSuffixAttribute = design->attributes()->itemByName(kAttributeGroup, kAttributeOutputFileSuffix);
+        aPtr<acore::Attribute> outputFileSuffixAttribute = design->attributes()->itemByName(constants::kAttributeGroup, constants::kAttributeOutputFileSuffix);
         if (outputFileSuffixAttribute != nullptr) {
             ginputs.outputFileSuffixInput->value(outputFileSuffixAttribute->value());
         }
 
-        aPtr<acore::Attribute> outputFolderAttribute = design->attributes()->itemByName(kAttributeGroup, kAttributeOutputFolder);
+        aPtr<acore::Attribute> outputFolderAttribute = design->attributes()->itemByName(constants::kAttributeGroup, constants::kAttributeOutputFolder);
         if (outputFolderAttribute != nullptr) {
             ginputs.outputFolderInput->text(outputFolderAttribute->value());
         }
 
-        aPtr<acore::Attribute> overwriteAttribute = design->attributes()->itemByName(kAttributeGroup, kAttributeOverwrite);
+        aPtr<acore::Attribute> overwriteAttribute = design->attributes()->itemByName(constants::kAttributeGroup, constants::kAttributeOverwrite);
         if (overwriteAttribute != nullptr) {
             ginputs.outputOverwriteInput->value(true);
         }
@@ -199,7 +201,7 @@ public:
             return;
 
         // body selection
-        aPtr<acore::SelectionCommandInput> bodySelectionInput = inputs->addSelectionInput(kBodiesInput, "Select Bodies", "Select bodies to export to STL");
+        aPtr<acore::SelectionCommandInput> bodySelectionInput = inputs->addSelectionInput(constants::kBodiesInput, "Select Bodies", "Select bodies to export to STL");
         if (!bodySelectionInput)
             return;
         bodySelectionInput->addSelectionFilter("SolidBodies"); // only allow selection of solid bodies
@@ -213,18 +215,18 @@ public:
 //            return;
 //        outputFolderInput->tooltip("Output Folder");
 //        outputFolderInput->tooltipDescription("Select the output folder for the STL files");
-        aPtr<acore::BoolValueCommandInput> dirbtn = inputs->addBoolValueInput(kOutputFolderInput, "Output Folder", false, "", true);
-        inputs->addTextBoxCommandInput(kOutputFolderTextBoxInput, "", "", 1, true);
+        aPtr<acore::BoolValueCommandInput> dirbtn = inputs->addBoolValueInput(constants::kOutputFolderInput, "Output Folder", false, "", true);
+        inputs->addTextBoxCommandInput(constants::kOutputFolderTextBoxInput, "", "", 1, true);
 
         // File suffix
-        aPtr<acore::StringValueCommandInput> outputFileSuffixInput = inputs->addStringValueInput(kOutputFileSuffixInput, "File Suffix", "");
+        aPtr<acore::StringValueCommandInput> outputFileSuffixInput = inputs->addStringValueInput(constants::kOutputFileSuffixInput, "File Suffix", "");
         if (!outputFileSuffixInput)
             return;
         outputFileSuffixInput->tooltip("File Suffix");
         outputFileSuffixInput->tooltipDescription("Suffix to append to the output file name. Note that a leading underscore will be added.");
 
         // overwrite
-        aPtr<acore::BoolValueCommandInput> outputOverwriteInput = inputs->addBoolValueInput(kOutputFileOverwriteInput, "Overwrite Existing Files", true, "", true);
+        aPtr<acore::BoolValueCommandInput> outputOverwriteInput = inputs->addBoolValueInput(constants::kOutputFileOverwriteInput, "Overwrite Existing Files", true, "", true);
         if (!outputOverwriteInput)
             return;
         outputOverwriteInput->text("Overwrite Existing Files");
@@ -249,10 +251,10 @@ extern "C" XI_EXPORT bool run(const char* context)
         return false;
 
     auto cmdDefs = ui->commandDefinitions();
-    auto cmdDef = cmdDefs->addButtonDefinition(kCommandId, "Export STL", "Export selected bodies to STL files", "");
+    auto cmdDef = cmdDefs->addButtonDefinition(constants::kCommandId, "Export STL", "Export selected bodies to STL files", "");
 
-    auto addinsPanel = ui->allToolbarPanels()->itemById(kPanelName);
-    auto ctrl = addinsPanel->controls()->itemById(kCommandId);
+    auto addinsPanel = ui->allToolbarPanels()->itemById(constants::kPanelName);
+    auto ctrl = addinsPanel->controls()->itemById(constants::kCommandId);
     if (!ctrl) {
         addinsPanel->controls()->addCommand(cmdDef);
     }
@@ -271,7 +273,7 @@ extern "C" XI_EXPORT bool stop(const char* context)
             return false;
         }
 
-        auto cmdDef = commandDefs->itemById(kCommandId);
+        auto cmdDef = commandDefs->itemById(constants::kCommandId);
         if (cmdDef) {
             cmdDef->deleteMe();
         }
@@ -279,8 +281,8 @@ extern "C" XI_EXPORT bool stop(const char* context)
             ui->messageBox("Cannot find command definition!", "Error");
         }
 
-        auto addinsPanel = ui->allToolbarPanels()->itemById(kPanelName);
-        auto ctrl = addinsPanel->controls()->itemById(kCommandId);
+        auto addinsPanel = ui->allToolbarPanels()->itemById(constants::kPanelName);
+        auto ctrl = addinsPanel->controls()->itemById(constants::kCommandId);
         if (ctrl) {
             ctrl->deleteMe();
         }
